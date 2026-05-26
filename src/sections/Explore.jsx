@@ -77,7 +77,7 @@ function Explore() {
       id="explore"
       className="relative min-h-screen py-32 px-6 overflow-hidden"
     >
-      {/* Background — same vibe as Hero */}
+      {/* Background */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-green-950" />
         <motion.div
@@ -203,7 +203,7 @@ function Explore() {
                   disabled={!isClickable}
                   className="relative group"
                 >
-                  {/* Pulse rings (only on next) */}
+                  {/* Pulse rings */}
                   {isNext && (
                     <>
                       <motion.div
@@ -214,11 +214,7 @@ function Explore() {
                       <motion.div
                         className="absolute inset-0 rounded-full border-2 border-green-400"
                         animate={{ scale: [1, 2], opacity: [0.6, 0] }}
-                        transition={{
-                          duration: 1.5,
-                          repeat: Infinity,
-                          delay: 0.5,
-                        }}
+                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
                       />
                     </>
                   )}
@@ -249,121 +245,144 @@ function Explore() {
                   {/* Label */}
                   <span
                     className={`absolute top-full mt-2 left-1/2 -translate-x-1/2 text-xs font-semibold whitespace-nowrap transition-colors ${
-                      isCompleted || isNext
-                        ? 'text-green-400'
-                        : 'text-zinc-600'
+                      isCompleted || isNext ? 'text-green-400' : 'text-zinc-600'
                     }`}
                   >
                     {part.title}
                   </span>
                 </button>
 
-                {/* Info Card (popup beside point) */}
+                {/* Info Card */}
                 <AnimatePresence>
                   {activePoint === part.id && (
-                    <motion.div
-                      initial={{
-                        opacity: 0,
-                        scale: 0.9,
-                        x: part.cardSide === 'left' ? 20 : -20,
-                      }}
-                      animate={{ opacity: 1, scale: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.3 }}
-                      className={`absolute top-1/2 -translate-y-1/2 z-20 ${
-                        isFinal ? 'w-96' : 'w-80'
-                      } ${
-                        part.cardSide === 'left'
-                          ? 'right-full mr-8'
-                          : 'left-full ml-8'
-                      }`}
-                    >
-                      <div
-                        className={`relative bg-zinc-900/95 backdrop-blur-md border rounded-2xl p-5 shadow-2xl ${
-                          isFinal
-                            ? 'border-green-500/50 shadow-green-500/20'
-                            : 'border-green-500/30'
-                        }`}
+                    <>
+                      {/* Mobile backdrop */}
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setActivePoint(null)
+                        }}
+                        className="lg:hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-20"
+                      />
+
+                      {/* The Card */}
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.9 }}
+                        transition={{ duration: 0.3 }}
+                        className={`
+                          z-30
+                          max-lg:fixed max-lg:inset-4 max-lg:m-auto max-lg:h-fit max-lg:max-h-[85vh] max-lg:overflow-y-auto max-lg:max-w-md
+                          lg:absolute lg:top-1/2 lg:-translate-y-1/2
+                          ${isFinal ? 'lg:w-96' : 'lg:w-80'}
+                          ${
+                            part.cardSide === 'left'
+                              ? 'lg:right-full lg:mr-8'
+                              : 'lg:left-full lg:ml-8'
+                          }
+                        `}
                       >
-                        {/* Image — different for final point */}
-                        {isFinal ? (
-                          <FinalReveal images={part.images} color={part.color} />
-                        ) : (
-                          <div className="relative aspect-video mb-4 rounded-xl overflow-hidden bg-black/50">
-                            <div
-                              className={`absolute inset-0 bg-gradient-to-br ${part.color} opacity-20 blur-2xl`}
-                            />
-                            <img
-                              src={part.image}
-                              alt={part.title}
-                              className="relative w-full h-full object-contain"
-                            />
+                        <div
+                          className={`relative bg-zinc-900/95 backdrop-blur-md border rounded-2xl p-5 shadow-2xl ${
+                            isFinal
+                              ? 'border-green-500/50 shadow-green-500/20'
+                              : 'border-green-500/30'
+                          }`}
+                        >
+                          {/* Close button (mobile only) */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setActivePoint(null)
+                            }}
+                            className="lg:hidden absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full text-white text-xl"
+                          >
+                            ×
+                          </button>
 
-                            {/* SVG overlay — dark mask + green ring */}
-                            <svg
-                              className="absolute inset-0 w-full h-full pointer-events-none"
-                              preserveAspectRatio="none"
-                              viewBox="0 0 100 100"
-                            >
-                              <defs>
-                                <mask id={`mask-${part.id}`}>
-                                  <rect width="100" height="100" fill="white" />
-                                  <circle
-                                    cx={part.highlight.x}
-                                    cy={part.highlight.y}
-                                    r={part.highlight.size / 3}
-                                    fill="black"
-                                  />
-                                </mask>
-                              </defs>
-
-                              <rect
-                                width="100"
-                                height="100"
-                                fill="rgba(0,0,0,0.75)"
-                                mask={`url(#mask-${part.id})`}
+                          {/* Image */}
+                          {isFinal ? (
+                            <FinalReveal images={part.images} color={part.color} />
+                          ) : (
+                            <div className="relative aspect-video mb-4 rounded-xl overflow-hidden bg-black/50">
+                              <div
+                                className={`absolute inset-0 bg-gradient-to-br ${part.color} opacity-20 blur-2xl`}
+                              />
+                              <img
+                                src={part.image}
+                                alt={part.title}
+                                className="relative w-full h-full object-contain"
                               />
 
-                              <circle
-                                cx={part.highlight.x}
-                                cy={part.highlight.y}
-                                r={part.highlight.size / 3}
-                                fill="none"
-                                stroke="#22c55e"
-                                strokeWidth="0.6"
+                              <svg
+                                className="absolute inset-0 w-full h-full pointer-events-none"
+                                preserveAspectRatio="none"
+                                viewBox="0 0 100 100"
                               >
-                                <animate
-                                  attributeName="r"
-                                  values={`${part.highlight.size / 3};${part.highlight.size / 3 + 2};${part.highlight.size / 3}`}
-                                  dur="2s"
-                                  repeatCount="indefinite"
-                                />
-                                <animate
-                                  attributeName="opacity"
-                                  values="0.8;0.4;0.8"
-                                  dur="2s"
-                                  repeatCount="indefinite"
-                                />
-                              </circle>
-                            </svg>
-                          </div>
-                        )}
+                                <defs>
+                                  <mask id={`mask-${part.id}`}>
+                                    <rect width="100" height="100" fill="white" />
+                                    <circle
+                                      cx={part.highlight.x}
+                                      cy={part.highlight.y}
+                                      r={part.highlight.size / 3}
+                                      fill="black"
+                                    />
+                                  </mask>
+                                </defs>
 
-                        {/* Text */}
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="text-2xl">{part.icon}</span>
-                          <div>
-                            <p className="text-green-400 text-xs uppercase tracking-wider">
-                              {isFinal ? 'Final Reveal' : `Step ${part.id}`}
-                            </p>
-                            <h3 className="text-lg font-bold">{part.title}</h3>
+                                <rect
+                                  width="100"
+                                  height="100"
+                                  fill="rgba(0,0,0,0.75)"
+                                  mask={`url(#mask-${part.id})`}
+                                />
+
+                                <circle
+                                  cx={part.highlight.x}
+                                  cy={part.highlight.y}
+                                  r={part.highlight.size / 3}
+                                  fill="none"
+                                  stroke="#22c55e"
+                                  strokeWidth="0.6"
+                                >
+                                  <animate
+                                    attributeName="r"
+                                    values={`${part.highlight.size / 3};${part.highlight.size / 3 + 2};${part.highlight.size / 3}`}
+                                    dur="2s"
+                                    repeatCount="indefinite"
+                                  />
+                                  <animate
+                                    attributeName="opacity"
+                                    values="0.8;0.4;0.8"
+                                    dur="2s"
+                                    repeatCount="indefinite"
+                                  />
+                                </circle>
+                              </svg>
+                            </div>
+                          )}
+
+                          {/* Text */}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-2xl">{part.icon}</span>
+                            <div>
+                              <p className="text-green-400 text-xs uppercase tracking-wider">
+                                {isFinal ? 'Final Reveal' : `Step ${part.id}`}
+                              </p>
+                              <h3 className="text-lg font-bold">{part.title}</h3>
+                            </div>
                           </div>
+                          <p className="text-gray-400 text-sm leading-relaxed">
+                            {part.description}
+                          </p>
                         </div>
-                        <p className="text-gray-400 text-sm leading-relaxed">
-                          {part.description}
-                        </p>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    </>
                   )}
                 </AnimatePresence>
               </div>

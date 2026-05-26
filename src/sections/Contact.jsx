@@ -57,7 +57,7 @@ function Contact() {
           className="mb-12"
         >
           <a
-            href="mailto:hussein.eissa@example.com"
+            href="mailto:issahsayn1@gmail.com"
             className="group inline-flex items-center gap-3 px-8 py-4 bg-green-500 hover:bg-green-600 text-black font-bold rounded-full text-lg transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/50"
           >
             <FiMail className="text-2xl" />
